@@ -1,9 +1,8 @@
-import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
 
 const connectDB = async () => {
     try {
-        const connection = await MongoClient.connect(process.env.uri);
+        const connection = await mongoose.connect("mongodb://127.0.0.1:27017/db");
         console.log("MongoDB connected");
     }
     catch (error) {
