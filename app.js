@@ -52,10 +52,6 @@ app.post("/register", async (req, res) => {
     }
 });
 
-app.post("/test", async (req, res) => {
-    return res.status(200).json({ message: "Hello" });
-});
-
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
