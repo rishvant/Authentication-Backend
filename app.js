@@ -4,6 +4,7 @@ import connectDB from "./db/index.js";
 import bodyParser from "body-parser";
 import User from "./models/user.js";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 
 dotenv.config({
     path: "./env"
@@ -15,6 +16,20 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 connectDB();
+
+const authenticateUser = (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) {
+        console.log("Token not available");
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            console.log("Error:", err);
+        }
+        req.user = user;
+        next();
+    });
+}
 
 app.post("/login", async (req, res) => {
     try {
@@ -46,6 +61,16 @@ app.post("/register", async (req, res) => {
         await newUser.save();
         const token = newUser.generateAccessToken();
         return res.json({ token });
+    }
+    catch (err) {
+        console.log("Error:", err);
+    }
+});
+
+app.get("/fetchuser", authenticateUser, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        res.json({ user });
     }
     catch (err) {
         console.log("Error:", err);
