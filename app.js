@@ -52,25 +52,15 @@ app.post("/login", async (req, res) => {
 
 app.post("/register", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, name, dob, phone, address } = req.body;
         const existingUser = await User.findOne({ username: username });
         if (existingUser) {
             return res.status(409).json({ error: "User Already Exists" });
         }
-        const newUser = new User({ username, password });
+        const newUser = new User({ username, password, name, dob, phone, address });
         await newUser.save();
         const token = newUser.generateAccessToken();
         return res.json({ token });
-    }
-    catch (err) {
-        console.log("Error:", err);
-    }
-});
-
-app.get("/fetchuser", authenticateUser, async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
-        res.json({ user });
     }
     catch (err) {
         console.log("Error:", err);
